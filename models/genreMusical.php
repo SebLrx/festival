@@ -47,14 +47,16 @@
             return $stmt->execute();
         }
 
-        public function readGenres(){
+        public function getAllGenres(){
             $myQuery = "SELECT
-                            *
+                            idGenre, nomGenre
                         FROM
-                            '.$this->table.'";
+                            $this->table";
                         
             $stmt = $this->connect->prepare($myQuery);
-            return $stmt->execute();
+            $stmt->execute();
+
+            return $stmt->fetchAll();
         }
 
         public function updateGenre(){

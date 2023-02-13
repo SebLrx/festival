@@ -40,7 +40,7 @@
 
         public function createArtiste(){
             $myQuery = "INSERT INTO
-                            '.$this->table.'
+                            $this->table
                         SET
                             nomArtiste = :nomArtiste";
             
@@ -49,16 +49,17 @@
             return $stmt->execute();
         }
 
-        public function readArtiste(){
+        public function getArtiste(){
             $myQuery = "SELECT
-                            *
+                            idArtiste, nomArtiste
                         FROM
-                            '.$this->table.'
+                            $this->table
                         WHERE
                         idArtiste = :idArtiste";
                         
             $stmt = $this->connect->prepare($myQuery);
             $stmt->bindParam(':idArtiste', $this->idArtiste);
+            
             return $stmt->execute();
         }
 
@@ -79,7 +80,7 @@
 
         public function updateArtiste(){
             $myQuery = "UPDATE
-                            '.$this->table.'
+                            $this->table
                         SET
                             nomArtiste = :nomArtiste
                         WHERE
@@ -91,9 +92,9 @@
             return $stmt->execute();
         }
 
-        public function delete(){
+        public function deleteArtiste(){
             $myQuery = "DELETE FROM
-                            '.$this->table.'
+                            $this->table
                         WHERE
                             idArtiste = :idArtiste";
 

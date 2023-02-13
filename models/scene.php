@@ -6,7 +6,7 @@
         
         private $idScene;
         private $nomScene;
-        private $idFestival;
+        private $idFestival = 1;
 
         public function __construct(){
             $this->connect = new Bdd();
@@ -58,17 +58,19 @@
             return $stmt->execute();
         }
 
-        public function readScenes(){
+        public function getAllScenes() {
             $myQuery = "SELECT
-                            *
+                            idScene, nomScene, idFestival
                         FROM
-                            '.$this->table.'
+                            $this->table
                         WHERE
                             idFestival = :idFestival";
                         
             $stmt = $this->connect->prepare($myQuery);
             $stmt->bindParam(':idFestival', $this->idFestival);
-            return $stmt->execute();
+            $stmt->execute();
+
+            return $stmt->fetchAll();
         }
 
         public function updateScene(){

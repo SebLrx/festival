@@ -16,14 +16,20 @@
       case 'connection':
         include('./vue/connexion.php'); 
         break;
+      case 'createUser':
+        include('./vue/createUser.php'); 
+        break;
       case 'user':
         include('./vue/user.php'); 
         break;
-      case 'artiste':
+      case 'festival':
         include('./vue/festival.php'); 
         break;
       case 'afficherArtistes':
         include('./vue/afficherArtistes.php'); 
+        break;
+      case 'profil':
+        include('./vue/userProfile.php'); 
         break;
       default:
         break;

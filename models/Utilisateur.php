@@ -66,6 +66,14 @@
         public function setPrenomUser($prenomUser){
             $this->prenomUser = $prenomUser;
         }
+
+        public function getAdresseUser(){
+            return $this->adresseUser;
+        }
+    
+        public function setAdresseUser($adresseUser){
+            $this->adresseUser = $adresseUser;
+        }
     
         public function getIdRole(){
             return $this->idRole;
@@ -77,7 +85,7 @@
 
         public function createUser(){
             $myQuery = "INSERT INTO
-                            '.$this->table.'
+                            utilisateur
                         SET
                             mailUser = :mailUser,
                             mdpUser = :mdpUser,
@@ -96,7 +104,7 @@
             return $stmt->execute();
         }
 
-        public function readUser(){
+        public function readUserById(){
             $myQuery = "SELECT
                             *
                         FROM
@@ -107,6 +115,37 @@
             $stmt = $this->connect->prepare($myQuery);
             $stmt->bindParam(':idUser', $this->idUser);
             return $stmt->execute();
+        }
+
+        public function readUserByMail(){
+            $myQuery = "SELECT
+                            *
+                        FROM
+                            utilisateur
+                        WHERE
+                            mailUser = :mailUser";
+                        
+            $stmt = $this->connect->prepare($myQuery);
+            $stmt->bindParam(':mailUser', $this->mailUser);
+            $stmt->execute();
+
+            return $result = $stmt->fetchAll();
+        }
+
+        //permet de vérifier si un utilisateur existe déjà via son mail
+        public function checkUserMail(){
+            $myQuery = "SELECT 
+                            COUNT(*)
+                        FROM
+                            utilisateur
+                        WHERE
+                            mailUser = :mailUser";
+                        
+            $stmt = $this->connect->prepare($myQuery);
+            $stmt->bindParam(':mailUser', $this->mailUser);
+            $stmt->execute();
+
+            return $result = $stmt->fetchAll();
         }
 
         public function connectUser(){

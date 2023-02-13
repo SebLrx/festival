@@ -60,23 +60,25 @@
             return $stmt->execute();
         }
 
-        public function readArtistScenes(){
+        public function getArtistScenes(){
             $myQuery = "SELECT
                             nomScene,
                             datePassage
                         FROM
                             scene
                         INNER JOIN
-                            '.$this->table.' 
+                            $this->table 
                         ON
-                            scene.idScene = '.$this->table.'.idScene
-
+                            scene.idScene = $this->table.idScene
                         WHERE
-                        idArtiste = :idArtiste";
+                            idArtiste = :idArtiste";
                         
             $stmt = $this->connect->prepare($myQuery);
             $stmt->bindParam(':idArtiste', $this->idArtiste);
-            return $stmt->execute();
+            $stmt->execute();
+
+            $result = $stmt->fetchAll();
+            return $result;
         }
 
         public function readSceneArtists(){
@@ -94,7 +96,9 @@
                         
             $stmt = $this->connect->prepare($myQuery);
             $stmt->bindParam(':idScene', $this->idScene);
-            return $stmt->execute();
+
+            $result = $stmt->fetchAll();
+            return $result;
         }
 
         // public function updateHeberge(){
