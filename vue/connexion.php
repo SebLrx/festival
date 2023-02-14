@@ -21,10 +21,10 @@ if (isset($_POST['mailUser']) && isset($_POST['mdpUser'])) {
     if ($user->connectUser() === true) {
       $userResult = $user->readUserByMail();
       $_SESSION['id'] = $userResult[0][0];
-      $_SESSION['name'] = $userResult[0][4];
-      $_SESSION['surname'] = $userResult[0][5];
+      $_SESSION['name'] = $userResult[0][3];
+      $_SESSION['surname'] = $userResult[0][4];
       $_SESSION['mail'] = $userResult[0][1];
-      $_SESSION['adress'] = $userResult[0][3];
+      $_SESSION['adress'] = $userResult[0][2];
       header('Location:' . $_SERVER["PHP_SELF"] . '?page=connection&auth=ok');
     } else {
       header('Location:' . $_SERVER["PHP_SELF"] . '?page=connection&auth=ko');

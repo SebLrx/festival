@@ -9,8 +9,7 @@
         private $idFestival = 1;
 
         public function __construct(){
-            $this->connect = new Bdd();
-            $this->connect = $this->connect->getConnexion();
+            $this->connect = BDD::getConnexion();
         }
 
         public function getTable(){
@@ -41,7 +40,7 @@
             return $this->idFestival;
         }
     
-        public function setIdFestival($idFestival){
+        public function setIdFestival(int $idFestival){
             $this->idFestival = $idFestival;
         }
 

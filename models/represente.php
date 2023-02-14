@@ -10,8 +10,7 @@
         private $idGenre;
 
         public function __construct(){
-            $this->connect = new Bdd();
-            $this->connect = $this->connect->getConnexion();
+            $this->connect = BDD::getConnexion();
         }
 
         public function getTable(){
@@ -26,7 +25,7 @@
             return $this->idArtiste;
         }
     
-        public function setIdArtiste($idArtiste){
+        public function setIdArtiste(string $idArtiste){
             $this->idArtiste = $idArtiste;
         }
     
@@ -34,7 +33,7 @@
             return $this->idGenre;
         }
     
-        public function setIdGenre($idGenre){
+        public function setIdGenre(string $idGenre){
             $this->idGenre = $idGenre;
         }
 
@@ -54,7 +53,7 @@
         // Recupere les genres en fonction d'un artiste
         public function getArtistGenres(){
             $myQuery = "SELECT
-                            nomGenre
+                            genreMusical.idGenre, nomGenre
                         FROM
                             genreMusical
                         INNER JOIN
@@ -68,8 +67,7 @@
             $stmt->bindParam(':idArtiste', $this->idArtiste);
             $stmt->execute();
 
-            $result = $stmt->fetchAll();
-            return $result;
+            return $stmt->fetchAll();
         }
 
         // Recupere les artistes en fonction d'un genre
@@ -87,6 +85,7 @@
                         
             $stmt = $this->connect->prepare($myQuery);
             $stmt->bindParam(':idGenre', $this->idGenre);
+
             return $stmt->execute();
         }
 
@@ -113,18 +112,22 @@
             return $result;
         }
 
-        // public function updateRepresente(){
-        //     $myQuery = "UPDATE
-        //                     '.$this->table.'
-        //                 SET
-        //                     idArtiste = :idArtiste,
-        //                 WHERE
-        //                     idArtiste = :idArtiste";
+        public function updateRepresente() {
+            $myQuery = "UPDATE
+                            $this->table
+                        SET
+                            idGenre = :idGenre
+                        WHERE
+                            idArtiste = :idArtiste
+                        AND
+                            idGenre = :idGenre";
             
-        //     $stmt = $this->connect->prepare($myQuery);
-        //     $stmt->bindParam(':idArtiste', $this->idArtiste);
-        //     return $stmt->execute();
-        // }
+            $stmt = $this->connect->prepare($myQuery);
+            $stmt->bindParam(':idArtiste', $this->idArtiste);
+            $stmt->bindParam(':idGenre', $this->idGenre);
+
+            return $stmt->execute();
+        }
 
         public function deleteRepresente(){
             $myQuery = "DELETE FROM

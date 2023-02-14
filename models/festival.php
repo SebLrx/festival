@@ -12,8 +12,7 @@ class Festival {
     private $dateFin;
 
     public function __construct(){
-        $this->connect = new Bdd();
-        $this->connect = $this->connect->getConnexion();
+        $this->connect = BDD::getConnexion();
     }
 
     public function getTable(){

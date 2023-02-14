@@ -9,8 +9,7 @@
         private $datePassage;
 
         public function __construct(){
-            $this->connect = new Bdd();
-            $this->connect = $this->connect->getConnexion();
+            $this->connect = BDD::getConnexion();
         }
 
         public function getTable(){
@@ -62,6 +61,7 @@
 
         public function getArtistScenes(){
             $myQuery = "SELECT
+                            scene.idScene,
                             nomScene,
                             datePassage
                         FROM
@@ -103,14 +103,17 @@
 
         // public function updateHeberge(){
         //     $myQuery = "UPDATE
-        //                     '.$this->table.'
+        //                     $this->table
         //                 SET
-        //                     idArtiste = :idArtiste,
+        //                     idGenre = :idGenre,
         //                 WHERE
-        //                     idArtiste = :idArtiste";
+        //                     idArtiste = :idArtiste
+        //                 AND 
+        //                     idScene = :idScene";
             
         //     $stmt = $this->connect->prepare($myQuery);
         //     $stmt->bindParam(':idArtiste', $this->idArtiste);
+        //     $stmt->bindParam(':idGenre', $this->idGenre);
         //     return $stmt->execute();
         // }
 

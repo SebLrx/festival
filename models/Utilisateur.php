@@ -15,8 +15,7 @@
         private $idRole;
 
         public function __construct(){
-            $this->connect = new Bdd();
-            $this->connect = $this->connect->getConnexion();
+            $this->connect = BDD::getConnexion();
         }
 
         public function getTable(){
@@ -83,7 +82,7 @@
             $this->idRole = $idRole;
         }
 
-        public function createUser(){
+        public function createUser(): bool {
             $myQuery = "INSERT INTO
                             utilisateur
                         SET
@@ -95,20 +94,24 @@
                             idRole = :idRole";
             
             $stmt = $this->connect->prepare($myQuery);
+
+            $password = password_hash($this->mdpUser, PASSWORD_BCRYPT);
+
             $stmt->bindParam(':mailUser', $this->mailUser);
-            $stmt->bindParam(':mdpUser', $this->mdpUser);
+            $stmt->bindParam(':mdpUser', $password);
             $stmt->bindParam(':adresseUser', $this->adresseUser);
             $stmt->bindParam(':nomUser', $this->nomUser);
             $stmt->bindParam(':prenomUser', $this->prenomUser);
             $stmt->bindParam(':idRole', $this->idRole);
+
             return $stmt->execute();
         }
 
-        public function readUserById(){
+        public function readUserById(): bool {
             $myQuery = "SELECT
                             *
                         FROM
-                            '.$this->table.'
+                            utilisateur
                         WHERE
                             idUser = :idUser";
                         
@@ -117,14 +120,14 @@
             return $stmt->execute();
         }
 
-        public function readUserByMail(){
+        public function readUserByMail(): bool {
             $myQuery = "SELECT
-                            *
+                            idUser, mailUser, adresseUser, nomUser, prenomUser
                         FROM
                             utilisateur
                         WHERE
-                            mailUser = :mailUser";
-                        
+                            mailUser = :mailUser
+                        LIMIT 1";
             $stmt = $this->connect->prepare($myQuery);
             $stmt->bindParam(':mailUser', $this->mailUser);
             $stmt->execute();
@@ -148,7 +151,22 @@
             return $result = $stmt->fetchAll();
         }
 
-        public function connectUser(){
+        public function getPasswordById() {
+            $myQuery = "SELECT
+                            mdpUser
+                        FROM
+                            utilisateur
+                        WHERE
+                            idUser = :idUser
+                        LIMIT 1";
+            $stmt = $this->connect->prepare($myQuery);
+            $stmt->bindParam(':idUser', $this->idUser);
+            $stmt->execute();
+
+            return $result = $stmt->fetchAll();
+        }
+
+        public function connectUser() {
             $myQuery = "SELECT
                             `idUser`, `mailUser`, `mdpUser`
                         FROM
@@ -163,7 +181,7 @@
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if (strcmp($this->getMdpUser(), $row['mdpUser']) === 0) {
+            if (password_verify($this->getMdpUser(), $row['mdpUser']) === true) {
                 return true;
             }
 
@@ -172,31 +190,32 @@
 
         public function updateUser(){
             $myQuery = "UPDATE
-                            '.$this->table.'
+                            utilisateur
                         SET
                             mailUser = :mailUser,
                             mdpUser = :mdpUser,
                             adresseUser = :adresseUser,
                             nomUser = :nomUser,
-                            prenomUser = :prenomUser,
-                            idRole = :idRole
+                            prenomUser = :prenomUser
                         WHERE
                             idUser = :idUser";
             
             $stmt = $this->connect->prepare($myQuery);
+
+            $password = password_hash($this->mdpUser, PASSWORD_BCRYPT);
+
             $stmt->bindParam(':mailUser', $this->mailUser);
-            $stmt->bindParam(':mdpUser', $this->mdpUser);
+            $stmt->bindParam(':mdpUser', $password);
             $stmt->bindParam(':adresseUser', $this->adresseUser);
             $stmt->bindParam(':nomUser', $this->nomUser);
             $stmt->bindParam(':prenomUser', $this->prenomUser);
-            $stmt->bindParam(':idRole', $this->idRole);
             $stmt->bindParam(':idUser', $this->idUser);
             return $stmt->execute();
         }
 
         public function deleteUser(){
             $myQuery = "DELETE FROM
-                            '.$this->table.'
+                            utilisateur
                         WHERE
                             idUser = :idUser";
 

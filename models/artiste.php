@@ -10,9 +10,7 @@
         private $nomArtiste;
 
         public function __construct(){
-            $this->connect = new Bdd();
-            $this->connect = $this->connect->getConnexion();
-        }
+            $this->connect = BDD::getConnexion();
 
         public function getTable(){
             return $this->table;
@@ -55,12 +53,13 @@
                         FROM
                             $this->table
                         WHERE
-                        idArtiste = :idArtiste";
+                            idArtiste = :idArtiste";
                         
             $stmt = $this->connect->prepare($myQuery);
             $stmt->bindParam(':idArtiste', $this->idArtiste);
-            
-            return $stmt->execute();
+            $stmt->execute();
+
+            return $stmt->fetch();
         }
 
         public function getAllArtiste(){
@@ -78,7 +77,7 @@
             return $result;
         }
 
-        public function updateArtiste(){
+        public function updateArtiste() {
             $myQuery = "UPDATE
                             $this->table
                         SET

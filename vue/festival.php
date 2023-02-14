@@ -35,7 +35,7 @@ if (isset($_GET["method"])) {
   }
   
   if ($_GET["method"] === "delete") {
-    $artiste->setIdArtiste($_GET["delete"]);
+    $artiste->setIdArtiste($_GET["artiste"]);
     $result = $artiste->deleteArtiste();
   
     if ($result === true) {
@@ -44,13 +44,50 @@ if (isset($_GET["method"])) {
       header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&artiste=error');
     }
   }
+
+  if ($_GET["method"] === "update") {
+    var_dump($_POST);
+
+    // if (isset($_POST["nomArtiste"])) {
+    //   $artiste->setIdArtiste($_GET["artiste"]);
+    //   $artiste->setNomArtiste($_POST["nomArtiste"]);
+
+    //   $result = $artiste->updateArtiste();
+    // }
+
+    // if (isset($_POST["genreMusicaux"])) {
+    //   $genre->setIdArtiste($_GET["artiste"]);
+    //   $genre->setIdGenreMusical($_POST["genreMusicaux"]);
+
+    //   $result = $genre->updateGenre();
+    // }
+
+    // if (isset($_POST["scene"])) {
+    //   $listeScene->setIdScene($_POST["scene"]);
+
+    //   $result = $listeScene->updateScene();
+    // }
+
+    // if (isset($_POST["datePassage"])) {
+    //   $scene->setIdArtiste($_GET["artiste"]);
+    //   $scene->setDatePassage($_POST["datePassage"]);
+
+    //   $result = $scene->updateDatePassage();
+    // }
+
+    // if ($result === true) {
+    //   header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&artiste=updated');
+    // } else {
+    //   header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&artiste=error');
+    // }
+  }
 }
 
 if (isset($_GET["type"])) {
   if ($_GET["type"] === "modifier" || $_GET["type"] === "afficher") {
-    if (isset($_GET["edit"])) {
-      $editArtiste = $artiste->getArtiste();
-    }
+    $artiste->setIdArtiste($_GET["artiste"]);
+
+    $editArtiste = $artiste->getArtiste();
   }
 }
 
@@ -68,7 +105,7 @@ if (isset($_GET["type"])) {
       if (isset($_GET["artiste"])) {
         if ($_GET["artiste"] == "add") {
     ?>
-    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF'] . '?page=festival&artiste=insert') ?>" method="post" class="my-2 flex gap-4">
+    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF'] . '?page=festival&method=insert') ?>" method="post" class="my-2 flex gap-4">
       <div class="flex items-center gap-1">
         <label for="nomArtiste">Nom de l'artiste</label>
         <input type="text" name="nomArtiste" id="nomArtiste" class="border">
@@ -117,83 +154,122 @@ if (isset($_GET["type"])) {
           } ?>">
             <?= htmlspecialchars($value["nomArtiste"]) ?>
           </a>
-          <a href="<?= htmlspecialchars('?page=festival&artiste=' . $value["idArtiste"] . 'type=modifier&method=delete') ?>" class="border px-6 py-3 hover:shadow-lg duration-300">Modifier</a>
-          <a href="<?= htmlspecialchars('?page=festival&artiste=' . $value["idArtiste"]  . 'type=supprimer') ?>" class="border px-6 py-3 hover:shadow-lg duration-300">Supprimer</a>
+          <a href="<?= htmlspecialchars('?page=festival&artiste=' . $value["idArtiste"] . '&type=modifier') ?>" class="border px-6 py-3 hover:shadow-lg duration-300">Modifier</a>
+          <a href="<?= htmlspecialchars('?page=festival&artiste=' . $value["idArtiste"]  . '&type=supprimer&method=delete') ?>" class="border px-6 py-3 hover:shadow-lg duration-300">Supprimer</a>
         </li>
       <?php
         }
       ?>
     </ul>
-    <div class="bg-black/10 px-10 py-20 w-full">
-      <h2 class="text-xl font-bold">
+    <div class="bg-black/10 px-10 py-10 w-full">
+      <h2 class="text-xl font-bold mb-4">
         <?php 
           if (isset($_GET["type"])) {
             switch($_GET["type"]) {
               case "afficher":
-                "Informations du musicien";
+                echo "Informations de l'artiste";
                 break;
               case "modifier":
-                "Modification du musicien";
+                echo "Modification de l'artiste";
                 break;
               default:
-                "Aucun musicien sélectionné";
+                echo "Aucun artiste sélectionné";
             }
           } else {
-            echo "Aucun musicien sélectionné";
+            echo "Aucun artiste sélectionné";
           }
         ?>
       </h2>
+
       <div>
-        <form action="<?= htmlspecialchars('?page=festival&artiste=edit&edit=' . $value["idArtiste"]) ?>" method="post">
           <?php
             if (isset($_GET["type"])) {
               if ($_GET["type"] === "afficher") {
           ?>
-          <div>
+          <div class="mb-4">
             <span class="text-lg">Nom :</span>
             <span class="text-lg"><?= htmlspecialchars($editArtiste['nomArtiste']) ?></span>
           </div>
-          <span class="text-lg">Genre musicaux :</span>
-          <ul class="list-disc list-inside mb-10">
+          <div class="mb-4">
+            <h3 class="text-lg">Genre musicaux :</h3>
+            <ul class="list-disc list-inside">
+            <?php
+              foreach ($genres as $key => $value) {
+            ?>
+              <li><?= htmlspecialchars($value['nomGenre']) ?></li>
+            <?php } ?>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg">Perfome sur les scènes suivantes :</h3>
+            <ul class="list-disc list-inside">
+            <?php
+              if (isset($_GET["artiste"])) {
+                foreach ($scenes as $key => $value) {
+            ?>
+              <li>Nom : <?= htmlspecialchars($value['nomScene']) ?> | Date : <?= htmlspecialchars($value['datePassage']) ?></li>
+            <?php }} ?>
+            </ul>
+          </div>
+          <?php } ?>
+
+          <!-- Modification de l'artiste -->
           <?php
-            foreach ($genres as $key => $value) {
-          ?>
-            <li><?= htmlspecialchars($value['nomGenre']) ?></li>
-          </ul>
-          <?php }}
             if ($_GET["type"] === "modifier") {
           ?>
-            <h3>Ajouter un genre musical</h3>
-            <select name="genreMusicaux" id="genreMusicaux">
-              <?php foreach ($listeGenre->getAllGenres() as $key => $value) { ?>
-                <option value="<?= htmlspecialchars($value['idGenre']) ?>"><?= htmlspecialchars($value['nomGenre']) ?></option>
+            <form action="<?= htmlspecialchars('?page=festival&artiste=' . $_GET["artiste"] . '&type=modifier&method=update') ?>" method="post">
+
+              <div>
+                <label for="nomArtiste">Nom de l'artiste</label>
+                <input type="text" name="nomArtiste" id="nomArtiste" class="border" value="<?= htmlspecialchars($editArtiste['nomArtiste']) ?>">
+              </div>
+
+              <div class="mb-4">
+                <h3>Modifer les genres musicaux</h3>
+                <?php 
+                  foreach ($genres as $key => $value) { 
+                ?>
+                  <label for="<?= htmlspecialchars($value['nomGenre']) ?>"><?= htmlspecialchars($value['nomGenre']) ?></label>
+                  <select name="genreMusicaux/<?= htmlspecialchars($value['idGenre']) ?>" id="<?= htmlspecialchars($value['nomGenre']) ?>">
+                    <?php 
+                      foreach ($listeGenre->getAllGenres() as $key => $valueGenre) { 
+                    ?>
+                      <option value="<?= htmlspecialchars($valueGenre['idGenre']) ?>" <?= htmlspecialchars($valueGenre['idGenre']) === htmlspecialchars($value['idGenre']) ? "selected" : "" ?>>
+                        <?= htmlspecialchars($valueGenre['nomGenre']) ?>
+                      </option>
+                    <?php } ?>
+                  </select>
+                  <?php } ?>
+              </div>
+                
+              <h3>Modifier les scenes</h3>
+              <div class="mb-4 flex flex-col gap-2">
+                <?php 
+                  foreach ($scenes as $key => $value) {
+                ?>
+                  <div>
+                    <label for="<?= htmlspecialchars($value['nomScene']) ?>">Joue sur la scene : <?= htmlspecialchars($value['nomScene']) ?></label>
+                    <select name="<?= htmlspecialchars($value['idScene']) ?>" id="<?= htmlspecialchars($value['nomScene']) ?>">
+                    <?php
+                        foreach ($listeScene->getAllScenes() as $key => $valueScene) {
+                      ?>
+                        <option value="<?= htmlspecialchars($valueScene['idScene']) ?>">
+                          <?= htmlspecialchars($valueScene['nomScene']) ?>
+                        </option>
+                      <?php } ?>
+                    </select>
+                  </div>
+                  <div>
+                    <h3>Modifier la date de passage</h3>
+                    <label for="datePassage">Date de passage : <?= htmlspecialchars($value["datePassage"]) ?></label>
+                    <input type="datetime-local" name="datePassage" id="datePassage" value="<?= htmlspecialchars($value["datePassage"]) ?>">
+                  </div>
                 <?php } ?>
-              </select>
-              
-            <h3>Ajouter une scene</h3>
-            <select name="scene" id="scene">
-              <?php foreach ($listeScene->getAllScenes() as $key => $value) { ?>
-                <option value="<?= htmlspecialchars($value['idScene']) ?>"><?= htmlspecialchars($value['nomScene']) ?></option>
-              <?php } ?>
-            </select>
-              
-            <h3>Ajouter une date</h3>
-            <input type="date" name="datePassage" id="datePassage">
+              </div>
+
+              <button type="submit" class="border border-black px-6 py-3 hover:shadow-md duration-300">Modifier</button>
+            </form>
           <?php }} ?>
-          <button type="submit" class="border px-6 py-3 hover:shadow-lg duration-300">Modifier</button>
-        </form>
-        
-        <div class="w-full">
-          <span class="text-lg">Perfome sur les scènes suivantes :</span>
-          <ul class="flex flex-col divide-y">
-          <?php
-            if (isset($_GET["artiste"])) {
-              foreach ($scenes as $key => $value) {
-          ?>
-            <li>Nom de la scene : <?= htmlspecialchars($value['datePassage']) ?> | Date de le performance : <?= htmlspecialchars($value['datePassage']) ?></li>
-          <?php }} ?>
-          </ul>
-        </div>
       </div>
     </div>
   </div>
