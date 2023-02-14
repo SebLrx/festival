@@ -8,7 +8,8 @@ class CSRF {
   }
 
   public function generateToken() {
-    return md5(uniqid(rand(), TRUE));
+    $this->token = md5(uniqid(rand(), true));
+    return $this->token;
   }
 
   public function getToken() {
@@ -16,7 +17,7 @@ class CSRF {
   }
 
   public function checkToken($token) {
-    if ($token == $this->token) {
+    if (strcmp($token, $this->token)) {
       return true;
     } else {
       return false;

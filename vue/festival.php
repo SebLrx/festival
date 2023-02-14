@@ -12,6 +12,9 @@ $scene = new Heberge();
 $listeGenre = new GenreMusical();
 $listeScene = new Scene();
 
+$token = new CSRF();
+$token->generateToken();
+
 $artistes = $artiste->getAllArtiste();
 
 if (isset($_GET["artiste"])) {
@@ -23,6 +26,10 @@ if (isset($_GET["artiste"])) {
 }
 
 if (isset($_GET["method"])) {
+  if ($token->checkToken($_POST['csrf']) === false) {
+    header('Location:' . $_SERVER["PHP_SELF"] . '?page=connection&auth=ko');
+  }
+
   if ($_GET["method"] === "insert") {
     $artiste->setNomArtiste($_POST["nomArtiste"]);
     $result = $artiste->createArtiste();
@@ -110,6 +117,7 @@ if (isset($_GET["type"])) {
         <label for="nomArtiste">Nom de l'artiste</label>
         <input type="text" name="nomArtiste" id="nomArtiste" class="border">
       </div>
+      <input type="text" name="csrf" token="<?= $token->getToken() ?>" hidden>
   
       <button type="submit" class="border px-6 hover:shadow-lg duration-300">Ajouter</button>
     </form>
@@ -218,7 +226,7 @@ if (isset($_GET["type"])) {
             if ($_GET["type"] === "modifier") {
           ?>
             <form action="<?= htmlspecialchars('?page=festival&artiste=' . $_GET["artiste"] . '&type=modifier&method=update') ?>" method="post">
-
+              <input type="text" name="csrf" token="<?= $token->getToken() ?>" hidden>
               <div>
                 <label for="nomArtiste">Nom de l'artiste</label>
                 <input type="text" name="nomArtiste" id="nomArtiste" class="border" value="<?= htmlspecialchars($editArtiste['nomArtiste']) ?>">

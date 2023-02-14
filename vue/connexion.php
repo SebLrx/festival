@@ -9,6 +9,11 @@ $token->generateToken();
 
 if (isset($_POST['mailUser']) && isset($_POST['mdpUser'])) {
   if ($_GET['user'] == 'auth') {
+    var_dump($_POST['csrf']);
+    if ($token->checkToken($_POST['csrf']) === false) {
+      header('Location:' . $_SERVER["PHP_SELF"] . '?page=connection&auth=koCsrf');
+    }
+
     // Test email and password
     if (filter_var($_POST['mailUser'], FILTER_VALIDATE_EMAIL) === false || empty($_POST['mdpUser'])) {
       header('Location:' . $_SERVER["PHP_SELF"] . '?page=connection&auth=ko');
@@ -49,7 +54,7 @@ if(isset($_POST['deconnexion'])) {
     <label for="mdpUser">Mot de passe</label>
     <input type="password" name="mdpUser" id="mdpUser" require>
   </div>
-  <input type="text" name="csrf" token="<?= $token->getToken() ?>" hidden>
+  <input type="text" name="csrf" value="<?= $token->getToken() ?>" hidden>
   <button type="submit">Connexion</button>
 
   <h3>

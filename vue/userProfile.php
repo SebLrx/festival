@@ -6,48 +6,62 @@ require_once(__DIR__ . '\..\models\Utilisateur.php');
 
 $token = new CSRF();
 $token->generateToken();
+
+$user = new Utilisateur();
+
 if(isset($_GET["method"])) {
-    $user = new Utilisateur();
+    if($_GET["method"] == "update") {
+        $user->setIdUser($_SESSION['id']);
+        $user->setNomUser(htmlspecialchars($_SESSION['name']));
+        $user->setPrenomUser(htmlspecialchars($_SESSION['surname']));
+        $user->setAdresseUser(htmlspecialchars($_SESSION['adress']));
+        $user->setMailUser(htmlspecialchars($_SESSION['mail']));
+        $user->setMdpUser($user->getPasswordById()[0][0]);
 
-    $user->setIdUser($_SESSION['id']);
-    $user->setNomUser(htmlspecialchars($_SESSION['name']));
-    $user->setPrenomUser(htmlspecialchars($_SESSION['surname']));
-    $user->setAdresseUser(htmlspecialchars($_SESSION['adress']));
-    $user->setMailUser(htmlspecialchars($_SESSION['mail']));
-    $user->setMdpUser($user->getPasswordById()[0][0]);
-
-    switch($_GET["field"]) {
-        case 'name':
-            $user->setNomUser(htmlspecialchars($_POST["name"]));
-            break;
-        case 'surname':
-            $user->setPrenomUser(htmlspecialchars($_POST["surname"]));
-            break;
-        case 'adress':
-            $user->setAdresseUser(htmlspecialchars($_POST["adress"]));
-            break;
-        case 'mail':
-            $user->setMailUser(htmlspecialchars($_POST["mail"]));
-            break;
-    }
-
-    if($user->updateUser() === true) {
         switch($_GET["field"]) {
             case 'name':
-                $_SESSION['name'] = $user->getNomUser();
+                $user->setNomUser(htmlspecialchars($_POST["name"]));
                 break;
             case 'surname':
-                $_SESSION['surname'] = $user->getPrenomUser();
+                $user->setPrenomUser(htmlspecialchars($_POST["surname"]));
                 break;
             case 'adress':
-                $_SESSION['adress'] = $user->getAdresseUser();
+                $user->setAdresseUser(htmlspecialchars($_POST["adress"]));
                 break;
             case 'mail':
-                $_SESSION['mail'] = $user->getMailUser();
+                $user->setMailUser(htmlspecialchars($_POST["mail"]));
                 break;
         }
-    }
 
+        if($user->updateUser() === true) {
+            switch($_GET["field"]) {
+                case 'name':
+                    $_SESSION['name'] = $user->getNomUser();
+                    break;
+                case 'surname':
+                    $_SESSION['surname'] = $user->getPrenomUser();
+                    break;
+                case 'adress':
+                    $_SESSION['adress'] = $user->getAdresseUser();
+                    break;
+                case 'mail':
+                    $_SESSION['mail'] = $user->getMailUser();
+                    break;
+            }
+        }
+    } else if($_GET["method"] == "delete") {
+        $user->setIdUser($_SESSION['id']);
+        $user->setMdpUser($_POST["delete"]);
+        var_dump($user->confirmDelete());
+        if($user->confirmDelete() == true) {
+            $user->deleteUser();
+            session_destroy();
+            session_unset();
+            header('Location:' . $_SERVER["PHP_SELF"] . '?page=connection');
+        } else {
+            echo "mauvais mot de passe";
+        }
+    }
 }
 
 if(isset($_SESSION['id'])) {
@@ -132,6 +146,23 @@ if(isset($_SESSION['id'])) {
 ?>
     <p>Changer le mot de passe</p>
 <?php
+    if(isset($_POST['deleteAccount'])) {
+?>
+        <form action="<?= htmlspecialchars($_SERVER['PHP_SELF'] . '?page=profil&method=delete&field=delete') ?>" method="POST">
+            <div>
+                <label for="delete">Confirmer avec votre mot de passe :</label>
+                <input type="text" name="delete" id="delete" require>
+                <button type="submit">Valider</button>
+            </div>
+        </form>
+<?php
+    } else {
+?>
+    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF'] . '?page=profil') ?>" method="post">
+        <button type="submit" id="deleteAccount" name="deleteAccount">Supprimer son compte</button>
+    </form>
+<?php
+    }
 } else {
 ?>
     <a href="http://localhost/festival/index.php?page=connection">Veuillez vous connecter en cliquant ici</a>

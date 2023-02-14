@@ -9,6 +9,10 @@ $token->generateToken();
 
 if (isset($_GET['user'])) {
   if ($_GET['user'] == 'newUser') {
+    if ($token->checkToken($_POST['csrf']) === false) {
+      header('Location:' . $_SERVER["PHP_SELF"] . '?page=connection&auth=ko');
+    }
+
     // Test email and password
     if (filter_var($_POST['mailUser'], FILTER_VALIDATE_EMAIL) === false || empty($_POST['mdpUser'])) {
       header('Location:' . $_SERVER["PHP_SELF"] . '?page=createUser&newUser=ko');

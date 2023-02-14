@@ -120,7 +120,7 @@
             return $stmt->execute();
         }
 
-        public function readUserByMail(): bool {
+        public function readUserByMail(){
             $myQuery = "SELECT
                             idUser, mailUser, adresseUser, nomUser, prenomUser
                         FROM
@@ -166,7 +166,7 @@
             return $result = $stmt->fetchAll();
         }
 
-        public function connectUser() {
+        public function connectUser(): bool {
             $myQuery = "SELECT
                             `idUser`, `mailUser`, `mdpUser`
                         FROM
@@ -180,6 +180,8 @@
             $stmt->execute();
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return $row['mdpUser'];
 
             if (password_verify($this->getMdpUser(), $row['mdpUser']) === true) {
                 return true;
@@ -213,7 +215,28 @@
             return $stmt->execute();
         }
 
-        public function deleteUser(){
+        public function confirmDelete() {
+            $myQuery = "SELECT
+                            mdpUser
+                        FROM
+                            $this->table
+                        WHERE
+                            idUser = :idUser";
+                        
+            $stmt = $this->connect->prepare($myQuery);
+            $stmt->bindParam(':idUser', $this->idUser);
+    
+            $stmt->execute();
+
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row["mdpUser"];
+            if (password_verify($this->getMdpUser(), $row['mdpUser']) === true) {
+                return true;
+            }
+            return false;
+        }
+
+        public function deleteUser() {
             $myQuery = "DELETE FROM
                             utilisateur
                         WHERE
