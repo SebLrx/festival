@@ -1,7 +1,7 @@
 <?php
 
 class CSRF {
-  private $token = null;
+  private string $token = "";
 
   public function __construct() {
     $this->token = $this->generateToken();

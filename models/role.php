@@ -4,8 +4,8 @@
         public $connect;
         private $table ='role';
         
-        private $idRole;
-        private $nomRole;
+        private int $idRole;
+        private string $nomRole;
 
         public function __construct(){
             $this->connect = BDD::getConnexion();

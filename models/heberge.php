@@ -4,9 +4,9 @@
         public $connect;
         private $table ='heberge';
         
-        private $idArtiste;
-        private $idScene;
-        private $datePassage;
+        private int $idArtiste;
+        private int $idScene;
+        private string $datePassage;
 
         public function __construct(){
             $this->connect = BDD::getConnexion();

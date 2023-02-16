@@ -6,10 +6,10 @@ class Festival {
     public $connect;
     private $table ='festival';
     
-    private $idFestival;
-    private $nomFestival;
-    private $dateDebut;
-    private $dateFin;
+    private int $idFestival;
+    private string $nomFestival;
+    private string $dateDebut;
+    private string $dateFin;
 
     public function __construct(){
         $this->connect = BDD::getConnexion();

@@ -4,8 +4,8 @@
         public $connect;
         private $table ='genremusical';
         
-        private $idGenre;
-        private $nomGenre;
+        private int $idGenre;
+        private string $nomGenre;
 
         public function __construct(){
             $this->connect = BDD::getConnexion();

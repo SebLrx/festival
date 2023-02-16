@@ -6,13 +6,13 @@
         public $connect;
         private $table ='utilisateur';
         
-        private $idUser;
-        private $mailUser;
-        private $mdpUser;
-        private $adresseUser;
-        private $nomUser;
-        private $prenomUser;
-        private $idRole;
+        private int $idUser;
+        private string $mailUser;
+        private string $mdpUser;
+        private string $adresseUser;
+        private string $nomUser;
+        private string $prenomUser;
+        private int $idRole;
 
         public function __construct(){
             $this->connect = BDD::getConnexion();
@@ -216,7 +216,6 @@
                             utilisateur
                         SET
                             mailUser = :mailUser,
-                            mdpUser = :mdpUser,
                             adresseUser = :adresseUser,
                             nomUser = :nomUser,
                             prenomUser = :prenomUser
@@ -225,10 +224,7 @@
             
             $stmt = $this->connect->prepare($myQuery);
 
-            $password = password_hash($this->mdpUser, PASSWORD_BCRYPT);
-
             $stmt->bindParam(':mailUser', $this->mailUser);
-            $stmt->bindParam(':mdpUser', $password);
             $stmt->bindParam(':adresseUser', $this->adresseUser);
             $stmt->bindParam(':nomUser', $this->nomUser);
             $stmt->bindParam(':prenomUser', $this->prenomUser);

@@ -4,8 +4,8 @@
         public $connect;
         private $table ='possede';
         
-        private $idUser;
-        private $idGenre;
+        private int $idUser;
+        private int $idGenre;
 
         public function __construct(){
             $this->connect = BDD::getConnexion();
@@ -78,6 +78,7 @@
         //     return $stmt->execute();
         // }
 
+        //delete un genre d'un utilisateur
         public function deletePossede(){
             $myQuery = "DELETE FROM
                             '.$this->table.'

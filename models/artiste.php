@@ -6,8 +6,8 @@
         public $connect;
         private $table ='artiste';
         
-        private $idArtiste;
-        private $nomArtiste;
+        private int $idArtiste;
+        private string $nomArtiste;
 
         public function __construct(){
             $this->connect = BDD::getConnexion();
