@@ -11,7 +11,7 @@
 
         public function __construct(){
             $this->connect = BDD::getConnexion();
-
+        }
         public function getTable(){
             return $this->table;
         }

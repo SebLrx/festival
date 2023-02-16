@@ -10,7 +10,7 @@ $token->generateToken();
 $user = new Utilisateur();
 
 if(isset($_GET["method"])) {
-    if($_GET["method"] == "update") {
+    if($_GET["method"] === "update") {
         $user->setIdUser($_SESSION['id']);
         $user->setNomUser(htmlspecialchars($_SESSION['name']));
         $user->setPrenomUser(htmlspecialchars($_SESSION['surname']));
@@ -31,10 +31,22 @@ if(isset($_GET["method"])) {
             case 'mail':
                 $user->setMailUser(htmlspecialchars($_POST["mail"]));
                 break;
+            case 'password':
+                $user->setMdpUser(htmlspecialchars($_POST["actualMDP"]));
+                if($user->verifyPasswordById() === true) {
+                    if($_POST["newMDP"] != $_POST["confNewMDP"]) {
+                        header('Location:' . htmlspecialchars($_SERVER['PHP_SELF']) . '?page=profil&method=update&field=password&success=false');
+                    } else {
+                        $user->setMdpUser(htmlspecialchars($_POST["newMDP"]));
+                    }
+                }
+                break;
+            default:
+                header('Location:' . htmlspecialchars($_SERVER['PHP_SELF']) . '?page=profil&success=false');
         }
 
         if($user->updateUser() === true) {
-            switch($_GET["field"]) {
+            switch(htmlspecialchars($_GET["field"])) {
                 case 'name':
                     $_SESSION['name'] = $user->getNomUser();
                     break;
@@ -48,16 +60,18 @@ if(isset($_GET["method"])) {
                     $_SESSION['mail'] = $user->getMailUser();
                     break;
             }
+            //header('Location:' . htmlspecialchars($_SERVER['PHP_SELF']) . '?page=profil&method=update&success=true');
         }
-    } else if($_GET["method"] == "delete") {
+    } else if(htmlspecialchars($_GET["method"]) === "delete") {
         $user->setIdUser($_SESSION['id']);
         $user->setMdpUser($_POST["delete"]);
         var_dump($user->confirmDelete());
-        if($user->confirmDelete() == true) {
+        
+        if($user->confirmDelete() === true) {
             $user->deleteUser();
             session_destroy();
             session_unset();
-            header('Location:' . $_SERVER["PHP_SELF"] . '?page=connection');
+            header('Location:' . htmlspecialchars($_SERVER["PHP_SELF"]) . '?page=connection');
         } else {
             echo "mauvais mot de passe";
         }
@@ -67,6 +81,18 @@ if(isset($_GET["method"])) {
 if(isset($_SESSION['id'])) {
 ?>
     <h2>Mon profil</h2>
+    <br>
+<?php
+    if(isset($_GET["success"])) {
+        if ($_GET["success"] == "true") {
+?>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative my-2" role="alert">
+                <strong class="font-bold">informations mises à jour avec succès</strong>
+            </div>
+<?php 
+        }
+    }
+?>
     <br>
     <p>Nom : <?=$_SESSION['name']?></p>
 <?php
@@ -125,7 +151,7 @@ if(isset($_SESSION['id'])) {
 <?php
     }
 ?>
-    <p>Email : <?=$_SESSION["mail"]?></p>
+    <p>Email : <?= $_SESSION["mail"]?></p>
 <?php
     if(isset($_POST['modifyMail'])) {
 ?>
@@ -144,7 +170,35 @@ if(isset($_SESSION['id'])) {
 <?php
     }
 ?>
-    <p>Changer le mot de passe</p>
+    <?php
+    if(isset($_POST['modifyMDP'])) {
+?>
+        <form action="<?= htmlspecialchars($_SERVER['PHP_SELF'] . '?page=profil&method=update&field=password') ?>" method="POST">
+            <div>
+                <label for="actualMDP">Mot de passe actuel :</label>
+                <input type="text" name="actualMDP" id="actualMDP" require>
+            </div>
+            <div>
+                <label for="newMDP">Nouveau mot de passe :</label>
+                <input type="text" name="newMDP" id="newMDP" require>
+            </div>
+            <div>
+                <label for="confNewMDP">Confirmer le nouveau mot de passe :</label>
+                <input type="text" name="confNewMDP" id="confNewMDP" require>
+            <div>
+            </div>
+                <button type="submit">Valider</button>
+            </div>
+        </form>
+<?php
+    } else {
+?>
+    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF'] . '?page=profil') ?>" method="post">
+        <button type="submit" id="modifyMDP" name="modifyMDP">Changer le mot de passe</button>
+    </form>
+<?php
+    }
+?>
 <?php
     if(isset($_POST['deleteAccount'])) {
 ?>

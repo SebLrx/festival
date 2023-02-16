@@ -9,13 +9,13 @@ $token->generateToken();
 
 if (isset($_GET['user'])) {
   if ($_GET['user'] == 'newUser') {
-    if ($token->checkToken($_POST['csrf']) === false) {
-      header('Location:' . $_SERVER["PHP_SELF"] . '?page=connection&auth=ko');
+    if ($token->checkToken(htmlspecialchars($_POST['csrf'])) === false) {
+      header('Location:' . htmlspecialchars($_SERVER["PHP_SELF"]) . '?page=connection&auth=ko');
     }
 
     // Test email and password
     if (filter_var($_POST['mailUser'], FILTER_VALIDATE_EMAIL) === false || empty($_POST['mdpUser'])) {
-      header('Location:' . $_SERVER["PHP_SELF"] . '?page=createUser&newUser=ko');
+      header('Location:' . htmlspecialchars($_SERVER["PHP_SELF"]) . '?page=createUser&newUser=ko');
     }
   
     $user = new Utilisateur();
@@ -37,9 +37,9 @@ if (isset($_GET['user'])) {
     $user->setIdRole($_POST['role']);
     
     if ($user->createUser() === true) {
-      header('Location:' . $_SERVER["PHP_SELF"] . '?page=createUser&newUser=ok');
+      header('Location:' . htmlspecialchars($_SERVER["PHP_SELF"]) . '?page=createUser&newUser=ok');
     } else {
-      header('Location:' . $_SERVER["PHP_SELF"] . '?page=createUser&newUser=ko');
+      header('Location:' . htmlspecialchars($_SERVER["PHP_SELF"]) . '?page=createUser&newUser=ko');
     }
   }  
 }
@@ -85,10 +85,10 @@ if (isset($_GET['user'])) {
   <h3>
   <?php
     if(isset($_GET['newUser'])) {
-      if($_GET['newUser'] == 'ok') {
+      if(htmlspecialchars($_GET['newUser']) == 'ok') {
         echo "Compte créé avec succès";
       }
-      if ($_GET['newUser'] == 'ko') {
+      if (htmlspecialchars($_GET['newUser']) == 'ko') {
         echo "Erreur lors de la création de compte";
       }
     }

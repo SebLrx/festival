@@ -166,6 +166,27 @@
             return $result = $stmt->fetchAll();
         }
 
+        public function verifyPasswordById(): bool {
+            $myQuery = "SELECT
+                            mdpUser
+                        FROM
+                            utilisateur
+                        WHERE
+                            idUser = :idUser
+                        LIMIT 1";
+            $stmt = $this->connect->prepare($myQuery);
+            $stmt->bindParam(':idUser', $this->idUser);
+            $stmt->execute();
+
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (password_verify($this->getMdpUser(), $row['mdpUser'])) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         public function connectUser(): bool {
             $myQuery = "SELECT
                             `idUser`, `mailUser`, `mdpUser`
@@ -181,13 +202,13 @@
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $row['mdpUser'];
+            //return [$row['mdpUser'], $this->getMdpUser()];
 
-            if (password_verify($this->getMdpUser(), $row['mdpUser']) === true) {
+            if (password_verify($this->getMdpUser(), $row['mdpUser'])) {
                 return true;
+            } else {
+                return false;
             }
-
-            return false;
         }
 
         public function updateUser(){

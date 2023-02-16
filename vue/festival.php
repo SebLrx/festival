@@ -5,6 +5,7 @@ require_once(__DIR__ . '\..\models\represente.php');
 require_once(__DIR__ . '\..\models\heberge.php');
 require_once(__DIR__ . '\..\models\genreMusical.php');
 require_once(__DIR__ . '\..\models\scene.php');
+require_once(__DIR__ . '\..\models\csrf.php');
 
 $artiste = new Artiste();
 $genre = new Represente();
@@ -18,11 +19,19 @@ $token->generateToken();
 $artistes = $artiste->getAllArtiste();
 
 if (isset($_GET["artiste"])) {
+  $artiste->setIdArtiste($_GET["artiste"]);
   $genre->setIdArtiste($_GET["artiste"]);
   $scene->setIdArtiste($_GET["artiste"]);
 
   $genres = $genre->getArtistGenres();
   $scenes = $scene->getArtistScenes();
+}
+
+if (isset($_GET["type"])) {
+  if ($_GET["type"] === "modifier" || $_GET["type"] === "afficher") {
+    $artiste->setIdArtiste($_GET["artiste"]);
+    $editArtiste = $artiste->getArtiste();
+  }
 }
 
 if (isset($_GET["method"])) {
@@ -35,9 +44,9 @@ if (isset($_GET["method"])) {
     $result = $artiste->createArtiste();
     
     if ($result === true) {
-      header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&artiste=inserted');
+      header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&success=inserted');
     } else {
-      header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&artiste=error');
+      header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&success=error');
     }
   }
   
@@ -46,20 +55,21 @@ if (isset($_GET["method"])) {
     $result = $artiste->deleteArtiste();
   
     if ($result === true) {
-      header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&artiste=deleted');
+      header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&success=deleted');
     } else {
-      header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&artiste=error');
+      header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&success=error');
     }
   }
 
   if ($_GET["method"] === "update") {
     var_dump($_POST);
 
-    // if (isset($_POST["nomArtiste"])) {
-    //   $artiste->setIdArtiste($_GET["artiste"]);
-    //   $artiste->setNomArtiste($_POST["nomArtiste"]);
-
-    //   $result = $artiste->updateArtiste();
+    if (isset($_POST["nomArtiste"])) {
+      if(htmlspecialchars($editArtiste['nomArtiste']) != $_POST["nomArtiste"]) {
+        $artiste->setNomArtiste($_POST["nomArtiste"]);
+        $result = $artiste->updateArtiste();
+      }
+    }
     // }
 
     // if (isset($_POST["genreMusicaux"])) {
@@ -82,19 +92,11 @@ if (isset($_GET["method"])) {
     //   $result = $scene->updateDatePassage();
     // }
 
-    // if ($result === true) {
-    //   header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&artiste=updated');
-    // } else {
-    //   header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&artiste=error');
-    // }
-  }
-}
-
-if (isset($_GET["type"])) {
-  if ($_GET["type"] === "modifier" || $_GET["type"] === "afficher") {
-    $artiste->setIdArtiste($_GET["artiste"]);
-
-    $editArtiste = $artiste->getArtiste();
+    if ($result === true) {
+      header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&artiste='.$_GET['artiste'].'&type=modifier&success=updated');
+    } else {
+      header('Location: ' . $_SERVER['PHP_SELF'] . '?page=festival&artiste='.$_GET['artiste'].'&type=modifier&success=error');
+    }
   }
 }
 
@@ -125,21 +127,27 @@ if (isset($_GET["type"])) {
     <?php }} ?>
 
     <?php 
-      if (isset($_GET["artiste"])) {
-        if ($_GET["artiste"] == "inserted") {
+      if (isset($_GET["success"])) {
+        if ($_GET["success"] == "inserted") {
     ?>
       <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative my-2" role="alert">
         <strong class="font-bold">L'artiste a bien été ajouté !</strong>
       </div>
     <?php }
-      if ($_GET["artiste"] == "deleted") {
+      if ($_GET["success"] == "deleted") {
     ?>
       <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative my-2" role="alert">
         <strong class="font-bold">L'artiste a bien été supprimé !</strong>
       </div>
+    <?php } 
+    if ($_GET["success"] == "updated") {
+    ?>
+      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative my-2" role="alert">
+        <strong class="font-bold">L'artiste a bien été mis à jour !</strong>
+      </div>
     <?php } ?>
     <?php 
-      if ($_GET["artiste"] == "error") {
+      if ($_GET["success"] == "error") {
     ?>
       <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative my-2" role="alert">
         <strong class="font-bold">Une erreur est survenue !</strong>
