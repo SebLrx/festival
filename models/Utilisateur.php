@@ -1,267 +1,297 @@
 <?php
-    require_once(__DIR__ . '.\..\utilitaires\BDD.php');
+require_once(__DIR__ . '.\..\utilitaires\BDD.php');
 
-    class Utilisateur {
-        //attributs
-        public $connect;
-        private $table ='utilisateur';
-        
-        private int $idUser;
-        private string $mailUser;
-        private string $mdpUser;
-        private string $adresseUser;
-        private string $nomUser;
-        private string $prenomUser;
-        private int $idRole;
+class Utilisateur
+{
+    //attributs
+    public $connect;
+    private $table = 'utilisateur';
 
-        public function __construct(){
-            $this->connect = BDD::getConnexion();
-        }
+    private int $idUser;
+    private string $mailUser;
+    private string $mdpUser;
+    private string $adresseUser;
+    private string $nomUser;
+    private string $prenomUser;
+    private int $idRole;
 
-        public function getTable(){
-            return $this->table;
-        }
-    
-        public function setTable($table){
-            $this->table = $table;
-        }
-    
-        public function getIdUser(){
-            return $this->idUser;
-        }
-    
-        public function setIdUser($idUser){
-            $this->idUser = $idUser;
-        }
-    
-        public function getMailUser(){
-            return $this->mailUser;
-        }
-    
-        public function setMailUser($mailUser){
-            $this->mailUser = $mailUser;
-        }
-    
-        public function getMdpUser(){
-            return $this->mdpUser;
-        }
-    
-        public function setMdpUser($mdpUser){
-            $this->mdpUser = $mdpUser;
-        }
-    
-        public function getNomUser(){
-            return $this->nomUser;
-        }
-    
-        public function setNomUser($nomUser){
-            $this->nomUser = $nomUser;
-        }
-    
-        public function getPrenomUser(){
-            return $this->prenomUser;
-        }
-    
-        public function setPrenomUser($prenomUser){
-            $this->prenomUser = $prenomUser;
-        }
+    public function __construct()
+    {
+        $this->connect = BDD::getConnexion();
+    }
 
-        public function getAdresseUser(){
-            return $this->adresseUser;
-        }
-    
-        public function setAdresseUser($adresseUser){
-            $this->adresseUser = $adresseUser;
-        }
-    
-        public function getIdRole(){
-            return $this->idRole;
-        }
-    
-        public function setIdRole($idRole){
-            $this->idRole = $idRole;
-        }
+    public function getTable(): string
+    {
+        return $this->table;
+    }
 
-        public function createUser(): bool {
-            $myQuery = "INSERT INTO
-                            utilisateur
-                        SET
-                            mailUser = :mailUser,
-                            mdpUser = :mdpUser,
-                            adresseUser = :adresseUser,
-                            nomUser = :nomUser,
-                            prenomUser = :prenomUser,
-                            idRole = :idRole";
-            
-            $stmt = $this->connect->prepare($myQuery);
+    public function setTable(string $table): void
+    {
+        $this->table = $table;
+    }
 
-            $password = password_hash($this->mdpUser, PASSWORD_BCRYPT);
+    public function getIdUser(): int
+    {
+        return $this->idUser;
+    }
 
-            $stmt->bindParam(':mailUser', $this->mailUser);
-            $stmt->bindParam(':mdpUser', $password);
-            $stmt->bindParam(':adresseUser', $this->adresseUser);
-            $stmt->bindParam(':nomUser', $this->nomUser);
-            $stmt->bindParam(':prenomUser', $this->prenomUser);
-            $stmt->bindParam(':idRole', $this->idRole);
+    public function setIdUser(int $idUser): void
+    {
+        $this->idUser = $idUser;
+    }
 
-            return $stmt->execute();
-        }
+    public function getMailUser(): string
+    {
+        return $this->mailUser;
+    }
 
-        public function readUserById(): bool {
-            $myQuery = "SELECT
-                            *
-                        FROM
-                            utilisateur
-                        WHERE
-                            idUser = :idUser";
-                        
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':idUser', $this->idUser);
-            return $stmt->execute();
-        }
+    public function setMailUser(string $mailUser)
+    {
+        $this->mailUser = $mailUser;
+    }
 
-        public function readUserByMail(){
-            $myQuery = "SELECT
-                            idUser, mailUser, adresseUser, nomUser, prenomUser
-                        FROM
-                            utilisateur
-                        WHERE
-                            mailUser = :mailUser
-                        LIMIT 1";
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':mailUser', $this->mailUser);
-            $stmt->execute();
+    public function getMdpUser(): string
+    {
+        return $this->mdpUser;
+    }
 
-            return $result = $stmt->fetchAll();
-        }
+    public function setMdpUser(string $mdpUser): void
+    {
+        $this->mdpUser = $mdpUser;
+    }
 
-        //permet de vérifier si un utilisateur existe déjà via son mail
-        public function checkUserMail(){
-            $myQuery = "SELECT 
-                            COUNT(*)
-                        FROM
-                            utilisateur
-                        WHERE
-                            mailUser = :mailUser";
-                        
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':mailUser', $this->mailUser);
-            $stmt->execute();
+    public function getNomUser(): string
+    {
+        return $this->nomUser;
+    }
 
-            return $result = $stmt->fetchAll();
-        }
+    public function setNomUser(string  $nomUser): void
+    {
+        $this->nomUser = $nomUser;
+    }
 
-        public function getPasswordById() {
-            $myQuery = "SELECT
-                            mdpUser
-                        FROM
-                            utilisateur
-                        WHERE
-                            idUser = :idUser
-                        LIMIT 1";
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':idUser', $this->idUser);
-            $stmt->execute();
+    public function getPrenomUser(): string
+    {
+        return $this->prenomUser;
+    }
 
-            return $result = $stmt->fetchAll();
-        }
+    public function setPrenomUser(string $prenomUser): void
+    {
+        $this->prenomUser = $prenomUser;
+    }
 
-        public function verifyPasswordById(): bool {
-            $myQuery = "SELECT
-                            mdpUser
-                        FROM
-                            utilisateur
-                        WHERE
-                            idUser = :idUser
-                        LIMIT 1";
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':idUser', $this->idUser);
-            $stmt->execute();
+    public function getAdresseUser(): string
+    {
+        return $this->adresseUser;
+    }
 
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    public function setAdresseUser(string $adresseUser): void
+    {
+        $this->adresseUser = $adresseUser;
+    }
 
-            if (password_verify($this->getMdpUser(), $row['mdpUser'])) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+    public function getIdRole(): int
+    {
+        return $this->idRole;
+    }
 
-        public function connectUser(): bool {
-            $myQuery = "SELECT
-                            `idUser`, `mailUser`, `mdpUser`
-                        FROM
-                            `$this->table`
-                        WHERE
-                            mailUser = :mailUser";
-                        
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':mailUser', $this->mailUser);
-    
-            $stmt->execute();
+    public function setIdRole(int $idRole): void
+    {
+        $this->idRole = $idRole;
+    }
 
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    public function createUser(): bool
+    {
+        $myQuery = "INSERT INTO
+                        utilisateur
+                    SET
+                        mailUser = :mailUser,
+                        mdpUser = :mdpUser,
+                        adresseUser = :adresseUser,
+                        nomUser = :nomUser,
+                        prenomUser = :prenomUser,
+                        idRole = :idRole";
 
-            //return [$row['mdpUser'], $this->getMdpUser()];
+        $stmt = $this->connect->prepare($myQuery);
 
-            if (password_verify($this->getMdpUser(), $row['mdpUser'])) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        $password = password_hash($this->mdpUser, PASSWORD_BCRYPT);
 
-        public function updateUser(){
-            $myQuery = "UPDATE
-                            utilisateur
-                        SET
-                            mailUser = :mailUser,
-                            adresseUser = :adresseUser,
-                            nomUser = :nomUser,
-                            prenomUser = :prenomUser
-                        WHERE
-                            idUser = :idUser";
-            
-            $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':mailUser', $this->mailUser);
+        $stmt->bindParam(':mdpUser', $password);
+        $stmt->bindParam(':adresseUser', $this->adresseUser);
+        $stmt->bindParam(':nomUser', $this->nomUser);
+        $stmt->bindParam(':prenomUser', $this->prenomUser);
+        $stmt->bindParam(':idRole', $this->idRole);
 
-            $stmt->bindParam(':mailUser', $this->mailUser);
-            $stmt->bindParam(':adresseUser', $this->adresseUser);
-            $stmt->bindParam(':nomUser', $this->nomUser);
-            $stmt->bindParam(':prenomUser', $this->prenomUser);
-            $stmt->bindParam(':idUser', $this->idUser);
-            return $stmt->execute();
-        }
+        return $stmt->execute();
+    }
 
-        public function confirmDelete() {
-            $myQuery = "SELECT
-                            mdpUser
-                        FROM
-                            $this->table
-                        WHERE
-                            idUser = :idUser";
-                        
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':idUser', $this->idUser);
-    
-            $stmt->execute();
+    public function readUserById(): bool
+    {
+        $myQuery = "SELECT
+                        *
+                    FROM
+                        utilisateur
+                    WHERE
+                        idUser = :idUser";
 
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $row["mdpUser"];
-            if (password_verify($this->getMdpUser(), $row['mdpUser']) === true) {
-                return true;
-            }
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':idUser', $this->idUser);
+
+        return $stmt->execute();
+    }
+
+    public function readUserByMail(): array
+    {
+        $myQuery = "SELECT
+                        idUser, mailUser, adresseUser, nomUser, prenomUser
+                    FROM
+                        utilisateur
+                    WHERE
+                        mailUser = :mailUser
+                    LIMIT 1";
+
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':mailUser', $this->mailUser);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    //permet de récupérer si un utilisateur existe déjà via son mail
+    public function checkUserMail(): array
+    {
+        $myQuery = "SELECT 
+                        COUNT(*)
+                    FROM
+                        utilisateur
+                    WHERE
+                        mailUser = :mailUser";
+
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':mailUser', $this->mailUser);
+        $stmt->execute();
+
+        return $stmt->fetch();
+    }
+
+    public function getPasswordById(): array
+    {
+        $myQuery = "SELECT
+                        mdpUser
+                    FROM
+                        utilisateur
+                    WHERE
+                        idUser = :idUser
+                    LIMIT 1";
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':idUser', $this->idUser);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    public function verifyPasswordById(): bool
+    {
+        $myQuery = "SELECT
+                        mdpUser
+                    FROM
+                        utilisateur
+                    WHERE
+                        idUser = :idUser
+                    LIMIT 1";
+
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':idUser', $this->idUser);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (password_verify($this->getMdpUser(), $row['mdpUser'])) {
+            return true;
+        } else {
             return false;
         }
+    }
 
-        public function deleteUser() {
-            $myQuery = "DELETE FROM
-                            utilisateur
-                        WHERE
-                            idUser = :idUser";
+    public function connectUser(): bool
+    {
+        $myQuery = "SELECT
+                        `idUser`, `mailUser`, `mdpUser`
+                    FROM
+                        `$this->table`
+                    WHERE
+                        mailUser = :mailUser";
 
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':idUser', $this->idUser);
-            return $stmt->execute();
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':mailUser', $this->mailUser);
+
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (password_verify($this->getMdpUser(), $row['mdpUser'])) {
+            return true;
+        } else {
+            return false;
         }
     }
-?>
+
+    public function updateUser(): bool
+    {
+        $myQuery = "UPDATE
+                        utilisateur
+                    SET
+                        mailUser = :mailUser,
+                        adresseUser = :adresseUser,
+                        nomUser = :nomUser,
+                        prenomUser = :prenomUser
+                    WHERE
+                        idUser = :idUser";
+
+        $stmt = $this->connect->prepare($myQuery);
+
+        $stmt->bindParam(':mailUser', $this->mailUser);
+        $stmt->bindParam(':adresseUser', $this->adresseUser);
+        $stmt->bindParam(':nomUser', $this->nomUser);
+        $stmt->bindParam(':prenomUser', $this->prenomUser);
+        $stmt->bindParam(':idUser', $this->idUser);
+
+        return $stmt->execute();
+    }
+
+    public function confirmDelete(): bool
+    {
+        $myQuery = "SELECT
+                        mdpUser
+                    FROM
+                        $this->table
+                    WHERE
+                        idUser = :idUser";
+
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':idUser', $this->idUser);
+
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (password_verify($this->getMdpUser(), $row['mdpUser']) === true) {
+            return true;
+        }
+        return false;
+    }
+
+    public function deleteUser(): bool
+    {
+        $myQuery = "DELETE FROM
+                        utilisateur
+                    WHERE
+                        idUser = :idUser";
+
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':idUser', $this->idUser);
+
+        return $stmt->execute();
+    }
+}

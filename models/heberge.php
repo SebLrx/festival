@@ -1,66 +1,79 @@
 <?php
-    class Heberge {
-        //attributs
-        public $connect;
-        private $table ='heberge';
-        
-        private int $idArtiste;
-        private int $idScene;
-        private string $datePassage;
+class Heberge
+{
+    //attributs
+    public $connect;
+    private string $table = 'heberge';
 
-        public function __construct(){
-            $this->connect = BDD::getConnexion();
-        }
+    private int $idArtiste;
+    private int $idScene;
+    private string $datePassage;
 
-        public function getTable(){
-            return $this->table;
-        }
-    
-        public function setTable($table){
-            $this->table = $table;
-        }
-    
-        public function getIdArtiste(){
-            return $this->idArtiste;
-        }
-    
-        public function setIdArtiste($idArtiste){
-            $this->idArtiste = $idArtiste;
-        }
-    
-        public function getIdScene(){
-            return $this->idScene;
-        }
-    
-        public function setIdScene($idScene){
-            $this->idScene = $idScene;
-        }
+    public function __construct()
+    {
+        $this->connect = BDD::getConnexion();
+    }
 
-        public function getDatePassage(){
-            return $this->datePassage;
-        }
-    
-        public function setDatePassage($datePassage){
-            $this->datePassage = $datePassage;
-        }
+    public function getTable(): string
+    {
+        return $this->table;
+    }
 
-        public function createHeberge(){
-            $myQuery = "INSERT INTO
+    public function setTable(string $table)
+    {
+        $this->table = $table;
+    }
+
+    public function getIdArtiste(): int
+    {
+        return $this->idArtiste;
+    }
+
+    public function setIdArtiste(int $idArtiste)
+    {
+        $this->idArtiste = $idArtiste;
+    }
+
+    public function getIdScene(): int
+    {
+        return $this->idScene;
+    }
+
+    public function setIdScene(int $idScene)
+    {
+        $this->idScene = $idScene;
+    }
+
+    public function getDatePassage(): string
+    {
+        return $this->datePassage;
+    }
+
+    public function setDatePassage(string $datePassage)
+    {
+        $this->datePassage = $datePassage;
+    }
+
+    public function createHeberge(): bool
+    {
+        $myQuery = "INSERT INTO
                             '.$this->table.'
                         SET
                             idArtiste = :idArtiste,
                             idScene = :idScene,
                             datePassage = :datePassage";
-            
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':idArtiste', $this->idArtiste);
-            $stmt->bindParam(':idScene', $this->idScene);
-            $stmt->bindParam(':datePassage', $this->datePassage);
-            return $stmt->execute();
-        }
 
-        public function getArtistScenes(){
-            $myQuery = "SELECT
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':idArtiste', $this->idArtiste);
+        $stmt->bindParam(':idScene', $this->idScene);
+        $stmt->bindParam(':datePassage', $this->datePassage);
+
+        return $stmt->execute();
+    }
+
+    public function getArtistScenes(): array
+    {
+        $myQuery = "SELECT
                             scene.idScene,
                             nomScene,
                             datePassage
@@ -72,17 +85,18 @@
                             scene.idScene = $this->table.idScene
                         WHERE
                             idArtiste = :idArtiste";
-                        
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':idArtiste', $this->idArtiste);
-            $stmt->execute();
 
-            $result = $stmt->fetchAll();
-            return $result;
-        }
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':idArtiste', $this->idArtiste);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
 
-        public function readSceneArtists(){
-            $myQuery = "SELECT
+        return $result;
+    }
+
+    public function readSceneArtists(): array
+    {
+        $myQuery = "SELECT
                             nomArtist,
                             datePassage
                         FROM
@@ -93,39 +107,24 @@
                         artist.idArtiste = '.$this->table.'.idArtiste
                         WHERE
                         idScene = :idScene";
-                        
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':idScene', $this->idScene);
 
-            $result = $stmt->fetchAll();
-            return $result;
-        }
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':idScene', $this->idScene);
+        $result = $stmt->fetchAll();
 
-        // public function updateHeberge(){
-        //     $myQuery = "UPDATE
-        //                     $this->table
-        //                 SET
-        //                     idGenre = :idGenre,
-        //                 WHERE
-        //                     idArtiste = :idArtiste
-        //                 AND 
-        //                     idScene = :idScene";
-            
-        //     $stmt = $this->connect->prepare($myQuery);
-        //     $stmt->bindParam(':idArtiste', $this->idArtiste);
-        //     $stmt->bindParam(':idGenre', $this->idGenre);
-        //     return $stmt->execute();
-        // }
+        return $result;
+    }
 
-        public function deleteHeberge(){
-            $myQuery = "DELETE FROM
+    public function deleteHeberge(): bool
+    {
+        $myQuery = "DELETE FROM
                             '.$this->table.'
                         WHERE
                             idArtiste = :idArtiste";
 
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':idArtiste', $this->idArtiste);
-            return $stmt->execute();
-        }
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':idArtiste', $this->idArtiste);
+
+        return $stmt->execute();
     }
-?>
+}

@@ -1,86 +1,99 @@
 <?php
-    class GenreMusical {
-        //attributs
-        public $connect;
-        private $table ='genremusical';
-        
-        private int $idGenre;
-        private string $nomGenre;
+class GenreMusical
+{
+    //attributs
+    public $connect;
+    private string $table = 'genremusical';
 
-        public function __construct(){
-            $this->connect = BDD::getConnexion();
-        }
+    private int $idGenre;
+    private string $nomGenre;
 
-        public function getTable(){
-            return $this->table;
-        }
-    
-        public function setTable($table){
-            $this->table = $table;
-        }
-    
-        public function getIdGenre(){
-            return $this->idGenre;
-        }
-    
-        public function setIdGenre($idGenre){
-            $this->idGenre = $idGenre;
-        }
+    public function __construct()
+    {
+        $this->connect = BDD::getConnexion();
+    }
 
-        public function getNomGenre(){
-            return $this->nomGenre;
-        }
-    
-        public function setNomGenre($nomGenre){
-            $this->nomGenre = $nomGenre;
-        }
+    public function getTable(): string
+    {
+        return $this->table;
+    }
 
-        public function createGenre(){
-            $myQuery = "INSERT INTO
+    public function setTable(string $table)
+    {
+        $this->table = $table;
+    }
+
+    public function getIdGenre(): int
+    {
+        return $this->idGenre;
+    }
+
+    public function setIdGenre(int $idGenre)
+    {
+        $this->idGenre = $idGenre;
+    }
+
+    public function getNomGenre(): string
+    {
+        return $this->nomGenre;
+    }
+
+    public function setNomGenre($nomGenre): void
+    {
+        $this->nomGenre = $nomGenre;
+    }
+
+    public function createGenre(): bool
+    {
+        $myQuery = "INSERT INTO
                             '.$this->table.'
                         SET
                             nomGenre = :nomGenre";
-            
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':nomGenre', $this->nomGenre);
-            return $stmt->execute();
-        }
 
-        public function getAllGenres(){
-            $myQuery = "SELECT
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':nomGenre', $this->nomGenre);
+
+        return $stmt->execute();
+    }
+
+    public function getAllGenres()
+    {
+        $myQuery = "SELECT
                             idGenre, nomGenre
                         FROM
                             $this->table";
-                        
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->execute();
 
-            return $stmt->fetchAll();
-        }
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->execute();
 
-        public function updateGenre(){
-            $myQuery = "UPDATE
+        return $stmt->fetchAll();
+    }
+
+    public function updateGenre(): bool
+    {
+        $myQuery = "UPDATE
                             '.$this->table.'
                         SET
                             nomGenre = :nomGenre
                         WHERE
                             idGenre = :idGenre";
-            
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':nomGenre', $this->nomGenre);
-            $stmt->bindParam(':idGenre', $this->idGenre);
-            return $stmt->execute();
-        }
 
-        public function delete(){
-            $myQuery = "DELETE FROM
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':nomGenre', $this->nomGenre);
+        $stmt->bindParam(':idGenre', $this->idGenre);
+
+        return $stmt->execute();
+    }
+
+    public function delete(): bool
+    {
+        $myQuery = "DELETE FROM
                             '.$this->table.'
                         WHERE
                             idGenre = :idGenre";
 
-            $stmt = $this->connect->prepare($myQuery);
-            $stmt->bindParam(':idGenre', $this->idGenre);
-            return $stmt->execute();
-        }
+        $stmt = $this->connect->prepare($myQuery);
+        $stmt->bindParam(':idGenre', $this->idGenre);
+        return $stmt->execute();
     }
-?>
+}

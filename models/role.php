@@ -1,38 +1,45 @@
 <?php
-    class Role {
-        //attributs
-        public $connect;
-        private $table ='role';
-        
-        private int $idRole;
-        private string $nomRole;
+class Role
+{
+    //attributs
+    public $connect;
+    private string $table = 'role';
 
-        public function __construct(){
-            $this->connect = BDD::getConnexion();
-        }
+    private int $idRole;
+    private string $nomRole;
 
-        public function getTable(){
-            return $this->table;
-        }
-    
-        public function setTable($table){
-            $this->table = $table;
-        }
-    
-        public function getIdRole(){
-            return $this->idRole;
-        }
-    
-        public function setIdRole($idRole){
-            $this->idRole = $idRole;
-        }
-
-        public function getNomRole(){
-            return $this->nomRole;
-        }
-    
-        public function setNomRole($nomRole){
-            $this->nomRole = $nomRole;
-        }
+    public function __construct()
+    {
+        $this->connect = BDD::getConnexion();
     }
-?>
+
+    public function getTable(): string
+    {
+        return $this->table;
+    }
+
+    public function setTable(string $table)
+    {
+        $this->table = $table;
+    }
+
+    public function getIdRole(): int
+    {
+        return $this->idRole;
+    }
+
+    public function setIdRole(int $idRole)
+    {
+        $this->idRole = $idRole;
+    }
+
+    public function getNomRole(): string
+    {
+        return $this->nomRole;
+    }
+
+    public function setNomRole(string $nomRole)
+    {
+        $this->nomRole = $nomRole;
+    }
+}

@@ -17,31 +17,32 @@ if (isset($_GET['user'])) {
     if (filter_var($_POST['mailUser'], FILTER_VALIDATE_EMAIL) === false || empty($_POST['mdpUser'])) {
       header('Location:' . htmlspecialchars($_SERVER["PHP_SELF"]) . '?page=createUser&newUser=ko');
     }
-  
+
     $user = new Utilisateur();
     $user->setNomUser(htmlspecialchars($_POST['nameUser']));
     $user->setPrenomUser(htmlspecialchars($_POST['surnameUser']));
     $user->setAdresseUser(htmlspecialchars($_POST['adressUser']));
     $user->setMailUser(htmlspecialchars($_POST['mailUser']));
     $result = $user->checkUserMail();
-    if($result[0][0] != 0) {
-        echo "Email déjà utilisé";
-        exit;
+
+    if ($result != 0) {
+      echo "Email déjà utilisé";
+      exit;
     }
-    if($_POST['mdpUser'] === $_POST['confimMdpUser']) {
-        $user->setMdpUser($_POST['mdpUser']);
+    if ($_POST['mdpUser'] === $_POST['confimMdpUser']) {
+      $user->setMdpUser($_POST['mdpUser']);
     } else {
-        echo "mots de passe différents";
-        exit;
+      echo "mots de passe différents";
+      exit;
     }
     $user->setIdRole($_POST['role']);
-    
+
     if ($user->createUser() === true) {
       header('Location:' . htmlspecialchars($_SERVER["PHP_SELF"]) . '?page=createUser&newUser=ok');
     } else {
       header('Location:' . htmlspecialchars($_SERVER["PHP_SELF"]) . '?page=createUser&newUser=ko');
     }
-  }  
+  }
 }
 ?>
 
@@ -55,7 +56,7 @@ if (isset($_GET['user'])) {
   <div>
     <label for="surnameUser">Prenom</label>
     <input type="text" name="surnameUser" id="surnameUser" require>
-  </div>  
+  </div>
   <div>
     <label for="adressUser">Adresse</label>
     <input type="text" name="adressUser" id="adressUser" require>
@@ -66,32 +67,32 @@ if (isset($_GET['user'])) {
   </div>
   <div>
     <label for="mdpUser">Mot de passe</label>
-    <input type="password" name="mdpUser" id="mdpUser" minlength ="8" require>
+    <input type="password" name="mdpUser" id="mdpUser" minlength="8" require>
   </div>
   <div>
     <label for="confimMdpUser">Confirmez le mot de passe</label>
-    <input type="password" name="confimMdpUser" id="confimMdpUser" min ="8" require>
+    <input type="password" name="confimMdpUser" id="confimMdpUser" min="8" require>
   </div>
   <div>
     <label for="role">Role</label>
     <select name="role" id="role">
-        <option value=1>Utilisateur</option>
-        <option value=3>Artiste</option>    
+      <option value=1>Utilisateur</option>
+      <option value=3>Artiste</option>
     </select>
   </div>
   <input type="text" name="csrf" token="<?= $token->getToken() ?>" hidden>
   <button type="submit">Créer compte</button>
 
   <h3>
-  <?php
-    if(isset($_GET['newUser'])) {
-      if(htmlspecialchars($_GET['newUser']) == 'ok') {
+    <?php
+    if (isset($_GET['newUser'])) {
+      if (htmlspecialchars($_GET['newUser']) == 'ok') {
         echo "Compte créé avec succès";
       }
       if (htmlspecialchars($_GET['newUser']) == 'ko') {
         echo "Erreur lors de la création de compte";
       }
     }
-  ?>
+    ?>
   </h3>
 </form>

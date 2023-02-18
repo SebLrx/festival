@@ -1,30 +1,39 @@
 <?php
 
-class CSRF {
+class CSRF
+{
   private string $token = "";
 
-  public function __construct() {
+  public function __construct()
+  {
     $this->token = $this->generateToken();
   }
 
-  public function generateToken() {
+  public function generateToken(): string
+  {
     $this->token = md5(uniqid(rand(), true));
+
     return $this->token;
   }
 
-  public function getToken() {
+  public function getToken()
+  {
     return $this->token;
   }
 
-  public function checkToken($token) {
+  public function checkToken($token)
+  {
     if (strcmp($token, $this->token)) {
+      $this->deleteToken();
       return true;
     } else {
+      $this->deleteToken();
       return false;
     }
   }
 
-  public function deleteToken() {
+  private function deleteToken(): void
+  {
     $this->token = null;
   }
 }
