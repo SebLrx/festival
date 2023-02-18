@@ -1,28 +1,15 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see https://aka.ms/vscode-remote/devcontainer.json.
+// .devcontainer/devcontainer.json
 {
-  "name": "XAMPP",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": "..",
-    "args": { }
-  },
-  // Set *default* container specific settings.json values on container create.
-  "settings": { },
-  // Add the IDs of extensions you want installed when the container is created.
-  "extensions": [ ],
-  // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // "forwardPorts": [],
-  // Uncomment the next line to run commands after the container is created.
-  // "postCreateCommand": "php -S localhost:8080 -t /workspace",
-  // Uncomment the next line to run commands every time you start the container.
-  // "postStartCommand": "echo 'Container was started'",
-  // Uncomment the next line to run commands before the container is stopped.
-  // "postStopCommand": "echo 'Container was stopped'",
-  // Uncomment the next line to enable the Docker CLI inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
-  // "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
-  "runArgs": [
-    "-v", "${PWD}:/workspace",
-    "-p", "80:80",
-    "-p", "443:443"
-  ]
+  "name": "Apache-MySQL-phpMyAdmin",
+  "image": "php:7.4-apache",
+  "extensions": ["ms-vscode-remote.remote-containers"],
+  "forwardPorts": [80, 3306],
+  "remoteUser": "root",
+  "mounts": [
+    "source=.,target=/workspace,type=bind,consistency=cached",
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "postCreateCommand": "docker-php-ext-install mysqli && a2enmod rewrite && service apache2 restart && apt-get update && apt-get -y install mysql-server && apt-get -y install phpmyadmin && echo \"Include /etc/phpmyadmin/apache.conf\" >> /etc/apache2/apache2.conf && service apache2 restart",
+  "runArgs": ["--privileged"],
+  "overrideCommand": false
 }
