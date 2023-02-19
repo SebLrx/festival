@@ -34,6 +34,6 @@ class CSRF
 
   private function deleteToken(): void
   {
-    $this->token = null;
+    $this->token = "";
   }
 }

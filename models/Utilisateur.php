@@ -260,6 +260,24 @@ class Utilisateur
         return $stmt->execute();
     }
 
+    public function updatePassword(): bool
+    {
+        $myQuery = "UPDATE
+                        utilisateur
+                    SET
+                        mdpUser = :mdpUser
+                    WHERE
+                        idUser = :idUser";
+
+        $stmt = $this->connect->prepare($myQuery);
+
+        $password = password_hash($this->mdpUser, PASSWORD_BCRYPT);
+        $stmt->bindParam(':mdpUser', $password);
+        $stmt->bindParam(':idUser', $this->idUser);
+
+        return $stmt->execute();
+    }
+
     public function confirmDelete(): bool
     {
         $myQuery = "SELECT

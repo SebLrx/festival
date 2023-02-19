@@ -38,6 +38,7 @@ if(isset($_GET["method"])) {
                         header('Location:' . htmlspecialchars($_SERVER['PHP_SELF']) . '?page=profil&method=update&field=password&success=false');
                     } else {
                         $user->setMdpUser(htmlspecialchars($_POST["newMDP"]));
+                        $user->updatePassword();
                     }
                 }
                 break;
