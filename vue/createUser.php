@@ -23,7 +23,7 @@ if (isset($_GET['user'])) {
     $user->setPrenomUser(htmlspecialchars($_POST['surnameUser']));
     $user->setAdresseUser(htmlspecialchars($_POST['adressUser']));
     $user->setMailUser(htmlspecialchars($_POST['mailUser']));
-    $result = $user->checkUserMail();
+    $result = $user->checkUserMail()[0][0];
 
     if ($result != 0) {
       echo "Email déjà utilisé";
