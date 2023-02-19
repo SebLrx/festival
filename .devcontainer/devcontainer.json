@@ -1,0 +1,15 @@
+// .devcontainer/devcontainer.json
+{
+  "name": "Apache-MySQL-phpMyAdmin",
+  "image": "php:7.4-apache",
+  "extensions": ["ms-vscode-remote.remote-containers"],
+  "forwardPorts": [80, 3306],
+  "remoteUser": "root",
+  "mounts": [
+    "source=.,target=/workspace,type=bind,consistency=cached",
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "postCreateCommand": "apt-get update && apt-get -y install git && docker-php-ext-install mysqli && a2enmod rewrite && service apache2 restart && apt-get -y install mysql-server && apt-get -y install phpmyadmin && echo \"Include /etc/phpmyadmin/apache.conf\" >> /etc/apache2/apache2.conf && service apache2 restart",
+  "runArgs": ["--privileged"],
+  "overrideCommand": false
+}
